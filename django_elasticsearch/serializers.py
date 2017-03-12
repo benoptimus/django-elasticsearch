@@ -64,11 +64,8 @@ class EsJsonToModelMixin(object):
         # datetime
         typ = field.get_internal_type()
         if val and typ in ('DateField', 'DateTimeField'):
-            if '+00:00' in val:
-                from django.utils.dateparse import parse_datetime
-                return parse_datetime(val)
-            else:
-                return datetime.datetime.strptime(val, '%Y-%m-%dT%H:%M:%S.%f')
+            from django.utils.dateparse import parse_datetime
+            return parse_datetime(val)
 
         if field.rel:
             # M2M
