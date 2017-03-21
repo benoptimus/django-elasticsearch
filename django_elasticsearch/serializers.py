@@ -4,6 +4,7 @@ import datetime
 from django.db.models import FieldDoesNotExist
 from django.db.models.fields.related import ManyToManyField
 
+import utils
 
 class EsSerializer(object):
     def serialize(self, instance):
@@ -94,7 +95,7 @@ class EsJsonToModelMixin(object):
 
 
 class EsModelToJsonMixin(object):
-    def __init__(self, model, max_depth=2, cur_depth=1):
+    def __init__(self, model, max_depth=4, cur_depth=1):
         self.model = model
         # used in case of related field on 'self' to avoid infinite loop
         self.cur_depth = cur_depth
@@ -131,7 +132,10 @@ class EsModelToJsonMixin(object):
                     return self.nested_serialize(rel)
 
         try:
-            return getattr(instance, field_name)
+            obj = getattr(instance, field_name)
+            if  obj.__class__.__name__ == 'Nationality':
+                return obj.code
+            return obj
         except AttributeError:
             raise AttributeError("The serializer doesn't know how to serialize {0}, "
                                  "please provide it a {1} method."
